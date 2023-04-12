@@ -5,7 +5,7 @@
         "jsdoc-format": false,
         "no-boolean-literal-compare": false,
         "no-consecutive-blank-lines": false,
-        "no-internal-module": false,
+        "no-declare-current-package": false,
         "no-padding": false,
         "no-single-declare-module": false,
         "object-literal-key-quotes": false,

@@ -22,7 +22,7 @@ declare global {
     interface Element { }
 }
 
-declare module _ {
+declare namespace _ {
     /**
     * underscore.js _.throttle options.
     **/

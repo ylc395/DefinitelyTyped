@@ -2,7 +2,6 @@ import * as MongoNpmModule from 'mongodb';
 // tslint:disable-next-line:no-duplicate-imports
 import { Collection as MongoCollection, CreateIndexesOptions, Db as MongoDb, Hint, IndexSpecification, MongoClient } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
-import { DDP } from 'meteor/ddp';
 
 declare module 'meteor/mongo' {
     // Based on https://github.com/microsoft/TypeScript/issues/28791#issuecomment-443520161
@@ -184,7 +183,7 @@ declare module 'meteor/mongo' {
                      * The server connection that will manage this collection. Uses the default connection if not specified. Pass the return value of calling `DDP.connect` to specify a different
                      * server. Pass `null` to specify no connection. Unmanaged (`name` is null) collections cannot specify a connection.
                      */
-                    connection?: DDP.DDPStatic | null | undefined;
+                    connection?: Object | null | undefined;
                     /** The method of generating the `_id` fields of new documents in this collection.  Possible values:
                      * - **`'STRING'`**: random strings
                      * - **`'MONGO'`**:  random [`Mongo.ObjectID`](#mongo_object_id) values
@@ -235,7 +234,7 @@ declare module 'meteor/mongo' {
                 transform?: Fn | undefined;
             }): boolean;
             dropCollectionAsync(): Promise<void>;
-            dropIndexAsync(indexName: string): Promise<void>;
+            dropIndexAsync(indexName: string): void;
             /**
              * Find the documents in a collection that match the selector.
              * @param selector A query describing the documents to find
@@ -479,8 +478,8 @@ declare module 'meteor/mongo' {
                 callbacks: ObserveChangesCallbacks<T>,
                 options?: { nonMutatingCallbacks?: boolean | undefined },
             ): Meteor.LiveQueryHandle;
-            [Symbol.iterator](): Iterator<T>;
-            [Symbol.asyncIterator](): AsyncIterator<T>;
+            [Symbol.iterator](): Iterator<T, never, never>;
+            [Symbol.asyncIterator](): AsyncIterator<T, never, never>;
         }
 
         var ObjectID: ObjectIDStatic;
@@ -511,7 +510,7 @@ declare module 'meteor/mongo' {
     }
 }
 
-declare module MongoInternals {
+declare namespace MongoInternals {
     interface MongoConnection {
         db: MongoDb;
         client: MongoClient;

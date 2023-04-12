@@ -16,7 +16,7 @@ declare namespace dojox {
     interface flash {
     }
     namespace flash {
-        module _base {
+        namespace _base {
         }
 
     }

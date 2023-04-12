@@ -1,4 +1,4 @@
-// Type definitions for johnny-five 2.1
+// Type definitions for johnny-five 1.3.0
 // Project: https://github.com/rwaldron/johnny-five
 // Definitions by: Toshiya Nakakura <https://github.com/nakakura>
 //                 Simon Colmer <https://github.com/workshop2>
@@ -6,11 +6,10 @@
 //                 Marcin Obiedziński <https://github.com/marcinobiedz>
 //                 Nicholas Hehr <https://github.com/HipsterBrown>
 //                 Scott González <https://github.com/scottgonzalez>
-//                 Andréas "ScreamZ" HANSS <https://github.com/ScreamZ>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 3.5
 
-/// <reference types="node"/>
+///<reference types="node"/>
 
 export interface AccelerometerOption {
     board?: Board | undefined;
@@ -22,10 +21,10 @@ export interface AccelerometerGeneralOption {
 }
 
 export interface AccelerometerAnalogOption extends AccelerometerGeneralOption {
-    pins: string[];
+    pins: Array<string>;
     sensitivity?: number | undefined;
     aref?: number | undefined;
-    zeroV?: number | number[] | undefined;
+    zeroV?: number | Array<number> | undefined;
     autoCalibrate?: boolean | undefined;
 }
 
@@ -37,18 +36,12 @@ export interface AccelerometerMMA7361Option extends AccelerometerGeneralOption {
     sleepPin?: number | string | undefined;
 }
 
-export class Accelerometer {
-    constructor(
-        option:
-            | AccelerometerGeneralOption
-            | AccelerometerAnalogOption
-            | AccelerometerMPU6050Option
-            | AccelerometerMMA7361Option,
-    );
+export declare class Accelerometer {
+    constructor(option: AccelerometerGeneralOption | AccelerometerAnalogOption | AccelerometerMPU6050Option | AccelerometerMMA7361Option);
 
     id: string;
     zeroV: number;
-    pins: string[];
+    pins: Array<string>;
     readonly pitch: number;
     readonly roll: number;
     readonly x: number;
@@ -58,8 +51,9 @@ export class Accelerometer {
     readonly inclination: number;
     readonly orientation: number;
 
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (freq: any) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (freq: any) => void): this;
     hasAxis(name: string): void;
     enable(): void;
     disable(): void;
@@ -73,23 +67,24 @@ export interface AltimeterOption {
     elevation?: number | undefined;
 }
 
-export class Altimeter {
+export declare class Altimeter {
     constructor(option: AltimeterOption);
 
     id: string;
     readonly feet: number;
     readonly meters: number;
 
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (data: any) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
 }
 
-export class Animation {
-    constructor(option: Servo | Servo[]);
+export declare class Animation {
+    constructor(option: Servo | Array<Servo>);
 
     target: number;
     duration: number;
-    cuePoints: number[];
+    cuePoints: Array<number>;
     keyFrames: number;
     easing: string;
     loop: boolean;
@@ -104,7 +99,7 @@ export class Animation {
     pause(): void;
     stop(): void;
     next(): void;
-    speed(speed: number[]): void;
+    speed(speed: Array<number>): void;
 }
 
 export interface BoardOption {
@@ -123,45 +118,26 @@ export interface BoardLogEvent {
     message: string;
 }
 
-export type SupportedBarometers = 'BMP180' | 'BMP280' | 'BME280' | 'MPL115A2' | 'MPL3115A2' | 'MS5611';
-
-export interface BarometerGenericArgs {
-    controller: SupportedBarometers;
-    address?: number;
-    freq?: number;
-}
-
-export interface BarometerBMP180Args {
-    controller: 'BMP180';
-    mode: 1 | 2 | 3;
-}
-
-export class Barometer {
-    constructor(args: BarometerGenericArgs | BarometerBMP180Args);
-    /** Pressure is a string because somehow it's been fixed using {@link Number.toFixed} which returns a string. */
-    pressure: string;
-    on(
-        event: 'change' | 'data',
-        cb: (data: {
-            /** Pressure is a string because somehow it's been fixed using {@link Number.toFixed} which returns a string. */
-            pressure: string;
-        }) => void,
-    ): this;
-}
-
-export class Board {
+export declare class Board {
     constructor(option?: BoardOption);
+
     io: any;
     id: string;
     repl: Repl;
     isReady: boolean;
-    pins: Record<number, Pin>;
+    pins: Array<Pin>;
     port: string;
 
-    on(event: 'close' | 'connect' | 'exit' | 'ready', cb: () => void): this;
-    on(event: 'error', cb: (error: Error) => void): this;
-    on(event: 'info' | 'message' | 'warn' | 'fail', cb: (event: BoardLogEvent) => void): this;
-    pinMode(pin: number | string, mode: PinMode): void;
+    on(event: "close", cb: () => void): this;
+    on(event: "connect", cb: () => void): this;
+    on(event: "error", cb: (error: Error) => void): this;
+    on(event: "exit", cb: () => void): this;
+    on(event: "fail", cb: (event: BoardLogEvent) => void): this;
+    on(event: "info", cb: (event: BoardLogEvent) => void): this;
+    on(event: "message", cb: (event: BoardLogEvent) => void): this;
+    on(event: "ready", cb: () => void): this;
+    on(event: "warn", cb: (event: BoardLogEvent) => void): this;
+    pinMode(pin: number | string, mode: number): void;
     analogWrite(pin: number | string, value: number): void;
     analogRead(pin: number | string, cb: (item: number) => void): void;
     digitalWrite(pin: number | string, value: number): void;
@@ -173,74 +149,6 @@ export class Board {
     samplingInterval(ms: number): void;
 }
 
-export class Boards<BoardsIDs extends BoardIdsListType, BoardsConfig extends BoardConfigListType> {
-    /**
-     * This class allows managing multiple boards at the same time.
-     *
-     * @param boardsIDs - Some IDs to match connected boards, associated serial/COM port is auto-guessed by `johnny-five`.
-     *
-     * **HINT** : Use `as const` to fix the type and take profit of auto-completion and strong typings. Otherwise TypeScript is not aware that the array won't be modified later.
-     *
-     * Example :
-     * ```ts
-     * const boards = new Boards(["UNO"] as const);
-     * ```
-     */
-    constructor(boardsIDs: BoardsIDs);
-
-    /**
-     * This class allows managing multiple boards at the same time.
-     *
-     * @param boardsIDs - Some IDs to match connected boards, if not provided associated serial/COM port is auto-guessed by `johnny-five`.
-     *
-     * **HINT** : Use `as const` to fix the type and take profit of auto-completion and strong typings. Otherwise TypeScript is not aware that the array won't be modified later.
-     *
-     * Example :
-     * ```ts
-     * const boards = new Boards([{id: "UNO"}] as const);
-     * ```
-     */
-    // tslint:disable-next-line:unified-signatures
-    constructor(boardsConfig: BoardsConfig);
-
-    /**
-     * Listen for ready to work status !
-     *
-     * @param event - `ready` When the boards are ready to operate on external components this event is triggered.
-     * @param cb - The callback is filled with a map of boards with their names.
-     */
-    on(
-        event: 'ready',
-        cb: (boards: IDBoardMap<BoardsIDs[number]> | IDBoardMap<BoardsConfig[number]['id']>) => void,
-    ): this;
-
-    /** This function allows to iterate on all boards */
-    each(cb: (board: Board) => void): this;
-
-    /**
-     * Search for a board using its ID, given the typing you can't be wrong so it always returns a {@Link Board}.
-     */
-    byId(id: BoardsIDs[number]): Board | null;
-
-    /**
-     * Search for a board using its ID, given the typing you can't be wrong so it always returns a {@Link Board}
-     */
-    byId(id: BoardsConfig[number]['id']): Board;
-}
-
-export type BoardIdsListType = readonly string[];
-
-export type BoardConfigListType = ReadonlyArray<{
-    readonly id: string;
-    readonly port?: string;
-    readonly repl?: boolean;
-    readonly debug?: boolean;
-    readonly timeout?: number;
-    readonly io?: any;
-}>;
-
-export type IDBoardMap<ID extends string> = Record<ID, Board>;
-
 export interface ButtonOption {
     board?: Board | undefined;
     pin: number | string;
@@ -250,7 +158,7 @@ export interface ButtonOption {
     holdtime?: number | undefined;
 }
 
-export class Button {
+export declare class Button {
     constructor(pin: number | string | ButtonOption);
 
     id: string;
@@ -259,37 +167,41 @@ export class Button {
     upValue: number;
     holdtime: number;
 
-    on(event: 'hold', cb: (holdTime: number) => void): this;
-    on(event: 'down' | 'press' | 'up' | 'release', cb: () => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "hold", cb: (holdTime: number) => void): this;
+    on(event: "down", cb: () => void): this;
+    on(event: "press", cb: () => void): this;
+    on(event: "up", cb: () => void): this;
+    on(event: "release", cb: () => void): this;
 }
 
 export interface CollectionPinOptions {
-    pins: Array<string | number>;
-    [key: string]: any;
+  pins: Array<string | number>;
+  [key: string]: any;
 }
 
-export class Collection<Base = {}> {
-    static installMethodForwarding(target: object, source: object): object;
+export declare class Collection<Base = {}> {
+  static installMethodForwarding(target: object, source: object): object;
 
-    constructor(options: Array<number | string | object> | CollectionPinOptions);
+  constructor(options: Array<number | string | object> | CollectionPinOptions);
 
-    type?: Base | undefined;
+  type?: Base | undefined;
 
-    add(...args: Array<number | object>): number;
+  add(...args: Array<number | object>): number;
 
-    each(callback: (item: Base, index: number) => void): this;
+  each(callback: (item: Base, index: number) => void): this;
 
-    forEach(callback: (item: Base, index: number) => void): this;
+  forEach(callback: (item: Base, index: number) => void): this;
 
-    includes(item: Base): boolean;
+  includes(item: Base): boolean;
 
-    indexOf(item: Base): number;
+  indexOf(item: Base): number;
 
-    map<T>(callback: (item: Base, index: number) => void): T[];
+  map(callback: (item: Base, index: number) => void): Array<any>;
 
-    slice(begin?: number, end?: number): Collection<Base>;
+  slice(begin?: number, end?: number): Collection<Base>;
 
-    byId(id: any): Base | undefined;
+  byId(id: any): Base | undefined;
 }
 
 export interface CompassOption {
@@ -298,71 +210,67 @@ export interface CompassOption {
     gauss?: number | undefined;
 }
 
-export class Compass {
+export declare class Compass {
     constructor(option: CompassOption);
 
     readonly heading: number;
-    readonly bearing: {
-        name: string;
-        abbr: string;
-        low: number;
-        high: number;
-        heading: number;
-    };
+    readonly bearing: { name: string, abbr: string, low: number, high: number, heading: number };
 
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
 }
 
 export interface ESCOption {
     board?: Board | undefined;
     pin: number | string;
-    pwmRange?: number[] | undefined;
+    pwmRange?: Array<number> | undefined;
     address?: string | undefined;
     controller?: 'PCA9685' | 'DEFAULT' | undefined;
     device?: 'FORWARD' | 'FORWARD_REVERSE' | 'FORWARD_REVERSE_BRAKE' | undefined;
     neutral?: number | undefined;
 }
 
-export class ESC {
+export declare class ESC {
     static Collection: ESCs;
 
     constructor(option: number | string | ESCOption);
 
     id: string;
     pin: number | string;
-    pwmRange: number[];
+    pwmRange: Array<number>;
     readonly value: number;
 
     throttle(value: number): this;
     brake(): this;
 }
 
-export class ESCs extends Collection<ESC> {
-    constructor(option: Array<number | string | ESCOption>);
+export declare class ESCs extends Collection<ESC> {
+  constructor(option: Array<number | string | ESCOption>);
 
-    throttle(value: number): this;
-    brake(): this;
+  throttle(value: number): this;
+  brake(): this;
 }
-export namespace Fn {
-    function constrain(value: number, lower: number, upper: number): number;
-    function inRange(value: number, lower: number, upper: number): boolean;
-    function map(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
-    function fmap(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
-    function range(lower: number, upper: number, tick: number): number[];
-    function scale(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
-    function fscale(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
-    function sum(values: number[]): number;
-    function toFixed(number: number, digits: number): string;
-    function uid(): string;
-    function bitSize(n: number): number;
-    function bitValue(bit: number): number;
-    function int16(msb: number, lsb: number): number;
-    function uint16(msb: number, lsb: number): number;
-    function int24(b16: number, b8: number, b0: number): number;
-    function uint24(b16: number, b8: number, b0: number): number;
-    function int32(b24: number, b16: number, b8: number, b0: number): number;
-    function uint32(b24: number, b16: number, b8: number, b0: number): number;
+
+export declare class Fn {
+    static constrain(value: number, lower: number, upper: number): number;
+    static inRange(value: number, lower: number, upper: number): boolean;
+    static map(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
+    static fmap(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
+    static range(lower: number, upper: number, tick: number): Array<number>;
+    static scale(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
+    static fscale(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number;
+    static sum(values: Array<number>): number;
+    static toFixed(number: number, digits: number): number;
+    static uid(): string;
+    static bitSize(n: number): number;
+    static bitValue(bit: number): number;
+    static int16(msb: number, lsb: number): number;
+    static uint16(msb: number, lsb: number): number;
+    static int24(b16: number, b8: number, b0: number): number;
+    static uint24(b16: number, b8: number, b0: number): number;
+    static int32(b24: number, b16: number, b8: number, b0: number): number;
+    static uint32(b24: number, b16: number, b8: number, b0: number): number;
 }
 
 export interface GyroGeneralOption {
@@ -371,7 +279,7 @@ export interface GyroGeneralOption {
 }
 
 export interface GyroAnalogOption extends GyroGeneralOption {
-    pins: string[];
+    pins: Array<string>;
     sensitivity: number;
     resolution?: number | undefined;
 }
@@ -380,11 +288,11 @@ export interface GyroMPU6050Option extends GyroGeneralOption {
     sensitivity: number;
 }
 
-export class Gyro {
+export declare class Gyro {
     constructor(option: GyroGeneralOption | GyroAnalogOption | GyroMPU6050Option);
 
     id: string;
-    pins: string[];
+    pins: Array<string>;
     readonly isCalibrated: boolean;
     readonly pitch: any;
     readonly roll: any;
@@ -394,8 +302,9 @@ export class Gyro {
     readonly y: number;
     readonly z: number;
 
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
     recalibrate(): void;
 }
 
@@ -405,94 +314,92 @@ export interface HygrometerOption {
     freq?: number | undefined;
 }
 
-export class Hygrometer {
+export declare class Hygrometer {
     constructor(option: HygrometerOption);
 
     id: string;
     readonly relativeHumidity: number;
     readonly RH: number;
 
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
 }
 
-// tslint:disable-next-line:interface-name
 export interface IMUGeneralOption {
     controller?: string | undefined;
     freq?: number | undefined;
 }
 
-// tslint:disable-next-line:interface-name
 export interface IMUMPU6050Option extends IMUGeneralOption {
     address: number;
 }
 
-export class IMU {
+export declare class IMU {
     constructor(option: IMUGeneralOption | IMUMPU6050Option);
 
     readonly accelerometer: Accelerometer;
-    readonly compass: Compass;
+    readonly compass: Compass
     readonly gyro: Gyro;
-    readonly orientation: Orientation;
+    readonly orientation: Orientiation;
     readonly thermometer: Thermometer;
 
-    on(event: 'change' | 'calibrated', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
+    on(event: "calibrated", cb: () => void): this;
 }
 
-export interface ReflectanceArrayOption {
-    pins: Array<number | string>;
-    emitter: number | string;
-    freq?: number;
-}
+export declare namespace IR {
 
-export interface LoadCalibrationOption {
-    min: number[];
-    max: number[];
-}
+    export interface ArrayOption {
+        pins: Array<number> | Array<string>;
+        emitter: number | string;
+        freq?: number | undefined;
+    }
 
-export class ReflectanceArray {
-    constructor(opts: ReflectanceArrayOption);
+    export interface LoadCalibrationOption {
+        min: Array<number>;
+        max: Array<number>;
+    }
 
-    id: string;
-    pins: Array<number | string>;
-    readonly isOn: boolean;
-    readonly isCalibrated: boolean;
-    readonly isOnLine: boolean;
-    readonly sensors: Sensor[];
-    readonly calibration: any;
-    readonly raw: any[];
-    readonly values: number | number[];
-    readonly line: number;
-
-    enable(): void;
-    disable(): void;
-    calibrate(): void;
-    calibrateUntil(predicate: () => void): void;
-    loadCalibration(option: LoadCalibrationOption): void;
-    on(event: 'data' | 'calibratedData' | 'line', cb: (data: unknown) => void): this;
+    export namespace Reflect {
+        export class Array {
+            constructor(option: ArrayOption);
+            enable(): void;
+            disable(): void;
+            calibrate(): void;
+            calibrateUntil(predicate: () => void): void;
+            loadCalibration(option: LoadCalibrationOption): void;
+            on(event: string, cb: () => void): this;
+            on(event: "data", cb: (data: any) => void): this;
+            on(event: "calibratedData", cb: (data: any) => void): this;
+            on(event: "line", cb: (data: any) => void): this;
+        }
+    }
 }
 
 export interface JoystickOption {
     board?: Board | undefined;
-    pins: string[];
+    pins: Array<string>;
     invert?: boolean | undefined;
     invertX?: boolean | undefined;
     invertY?: boolean | undefined;
 }
 
-export class Joystick {
+export declare class Joystick {
     constructor(option: JoystickOption);
 
     id: string;
     readonly x: number;
     readonly y: number;
-    axis: number[];
-    raw: number[];
+    axis: Array<number>;
+    raw: Array<number>;
 
-    on(event: 'data', cb: (data: unknown) => void): this;
-    on(event: 'change', cb: () => void): this;
-    on(event: 'axismove', cb: (error: Error, date: Date) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "axismove", cb: (error: Error, date: Date) => void): this;
 }
 
 export interface LCDGeneralOption {
@@ -507,11 +414,11 @@ export interface LCDI2COption extends LCDGeneralOption {
 }
 
 export interface LCDParallelOption extends LCDGeneralOption {
-    pins: any[];
+    pins: Array<any>;
     backlight?: number | undefined;
 }
 
-export class LCD {
+export declare class LCD {
     constructor(option: LCDGeneralOption | LCDI2COption | LCDParallelOption);
 
     id: string;
@@ -545,7 +452,7 @@ export interface LedOption {
     isAnode?: boolean | undefined;
 }
 
-export class Led {
+export declare class Led {
     constructor(option: LedOption['pin'] | LedOption);
 
     animation: Animation;
@@ -571,81 +478,81 @@ export class Led {
     toggle(): this;
 }
 
-export namespace Led {
-    interface DigitsOption {
+export declare namespace Led {
+
+    export interface DigitsOption {
         board?: Board | undefined;
         pins: any;
         devices?: number | undefined;
         controller?: string | undefined;
     }
 
-    class Digits {
+    export class Digits {
         constructor(option: DigitsOption);
 
         readonly isMatrix: boolean;
         readonly devices: number;
         digitOrder: number;
 
-        on(index?: number): void;
-        off(index?: number): void;
-        clear(index?: number): void;
+        on(): void;
+        on(index: number): void;
+        off(): void;
+        off(index: number): void;
+        clear(): void;
+        clear(index: number): void;
         brightness(value: number): void;
-        // tslint:disable-next-line:unified-signatures
         brightness(index: number, value: number): void;
         draw(position: number, character: number): void;
-        // tslint:disable-next-line:unified-signatures
         draw(index: number, position: number, character: number): void;
     }
 
-    interface MatrixOption {
+    export interface MatrixOption {
         board?: Board | undefined;
         pins: any;
         devices?: number | undefined;
     }
 
-    interface MatrixIC2Option {
+    export interface MatrixIC2Option {
         board?: Board | undefined;
         controller: string;
-        addresses?: any[] | undefined;
+        addresses?: Array<any> | undefined;
         isBicolor?: boolean | undefined;
         dims?: any;
         rotation?: number | undefined;
     }
 
-    class Matrix {
+    export class Matrix {
         constructor(option: MatrixOption | MatrixIC2Option);
 
         readonly isMatrix: boolean;
         readonly devices: number;
 
-        on(index?: number): void;
-        off(index?: number): void;
-        clear(index?: number): void;
+        on(): void;
+        on(index: number): void;
+        off(): void;
+        off(index: number): void;
+        clear(): void;
+        clear(index: number): void;
         brightness(value: number): void;
-        // tslint:disable-next-line:unified-signatures
         brightness(index: number, value: number): void;
         led(row: number, col: number, state: any): void;
-        // tslint:disable-next-line:unified-signatures
-        led(index: number, row: number, col: number, state: unknown): void;
+        led(index: number, row: number, col: number, state: any): void;
         row(row: number, val: number): void;
-        // tslint:disable-next-line:unified-signatures
         row(index: number, row: number, val: number): void;
         column(row: number, val: number): void;
-        // tslint:disable-next-line:unified-signatures
         column(index: number, row: number, val: number): void;
         draw(position: number, character: number): void;
-        // tslint:disable-next-line:unified-signatures
         draw(index: number, position: number, character: number): void;
     }
 
-    interface RGBOption {
+    export interface RGBOption {
         board?: Board | undefined;
-        pins: number[] | { blue: number; green: number; red: number };
+        pins: Array<number> | { blue: number; green: number; red: number; };
         isAnode?: boolean | undefined;
         controller?: string | undefined;
     }
 
-    class RGB {
+    export class RGB {
         constructor(option: RGBOption);
 
         red: Led;
@@ -657,7 +564,6 @@ export namespace Led {
         off(): void;
         color(value: string): void;
         toggle(): void;
-        blink(ms: number): void;
         strobe(ms: number): void;
         intensity(value: number): void;
         fadeIn(ms: number): void;
@@ -672,17 +578,20 @@ export interface MotionOption {
     pin: number | string;
 }
 
-export class Motion {
+export declare class Motion {
     constructor(option: number | MotionOption);
-    on(event: 'data', cb: (data: unknown) => void): this;
-    on(event: 'calibrated' | 'motionstart' | 'motionend', cb: () => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
+    on(event: "motionstart", cb: () => void): this;
+    on(event: "motionend", cb: () => void): this;
+    on(event: "calibrated", cb: () => void): this;
 }
 
 export interface MotorPins {
     pwm: number;
     dir: number;
     cdir?: number | undefined;
-    brake?: number | undefined;
+    brake?:number | undefined;
 }
 
 export interface MotorOption {
@@ -696,7 +605,7 @@ export interface MotorOption {
     bits?: any;
 }
 
-export class Motor {
+export declare class Motor {
     constructor(option: number[] | MotorOption);
 
     readonly isOn: boolean;
@@ -711,7 +620,7 @@ export class Motor {
     release(): void;
 }
 
-export class Motors {
+export declare class Motors {
     constructor(option: number[] | MotorOption[]);
 
     readonly isOn: boolean;
@@ -726,20 +635,22 @@ export class Motors {
     release(): void;
 }
 
-export interface OrientationOption {
+export interface OrientiationOption {
     board?: Board | undefined;
     controller?: string | undefined;
     freq?: number | undefined;
 }
 
-export class Orientation {
-    constructor(option: OrientationOption);
+export declare class Orientiation {
+    constructor(option: OrientiationOption);
 
     readonly euler: any;
     readonly quarternion: any;
 
-    on(event: 'change' | 'calibrated', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
+    on(event: "calibrated", cb: () => void): this;
 }
 
 export interface PiezoOption {
@@ -748,12 +659,11 @@ export interface PiezoOption {
 }
 
 export interface PiezoTune {
-    song: string | Array<[frequency: string | null, duration: number]>;
     tempo?: number;
-    beats?: number;
+    song: [frequency: string | null, duration: number][];
 }
 
-export class Piezo {
+export declare class Piezo {
     constructor(option: number | PiezoOption);
 
     id: string;
@@ -772,49 +682,24 @@ export interface PinOption {
     id?: number | string | undefined;
     pin: number | string;
     type?: string | undefined;
-    board?: Board | undefined;
 }
 
 export interface PinState {
-    supportedModes: number[];
+    supportedModes: Array<number>;
     mode: number;
     value: number;
     report: number;
     analogChannel: number;
 }
 
-/**
- * You can use this enum to set the pin mode or you can use static properties from {@link Pin}.
- *
- * @example
- * ```ts
- * const pin = new Pin(13);
- * pin.mode = PinMode.OUTPUT;
- * pin.mode = Pin.OUTPUT;
- * ```
- */
-export enum PinMode {
-    INPUT = 0,
-    OUTPUT = 1,
-    ANALOG = 2,
-    PWM = 3,
-    SERVO = 4,
-}
-
-export class Pin {
-    static readonly INPUT = 0;
-    static readonly OUTPUT = 1;
-    static readonly ANALOG = 2;
-    static readonly PWM = 3;
-    static readonly SERVO = 4;
-
+export declare class Pin {
     constructor(option: number | string | PinOption);
 
     id: number | string;
     pin: number | string;
-    type: 'digital' | 'analog';
+    type: "digital" | "analog";
     value: number;
-    mode: PinMode;
+    mode: number;
 
     static write(pin: number, value: number): void;
     static read(pin: number, cb: (error: Error, data: number) => void): void;
@@ -823,8 +708,10 @@ export class Pin {
     low(): void;
     write(value: number): void;
     read(cb: (error: Error, value: number) => void): void;
-    on(event: 'high' | 'low', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "high", cb: () => void): this;
+    on(event: "low", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
 }
 
 export interface PingOption {
@@ -833,102 +720,45 @@ export interface PingOption {
     pulse?: number | undefined;
 }
 
-export class Ping {
+export declare class Ping {
     constructor(option: number | PingOption);
-
-    /** Calculated distance to object in inches */
-    readonly in: number;
-    /** Calculated distance to object in inches */
-    readonly inches: number;
-    /** Calculated distance to object in centimeters */
-    readonly cm: number;
-
-    on(event: 'change', cb: () => void): this;
 }
 
-export interface ProximityOption {
+export declare interface ProximityOption {
     board?: Board | undefined;
     pin: number | string;
     controller: string;
     freq?: number | undefined;
 }
 
-export interface ProximityData {
+export declare interface ProximityData {
     cm: number;
     in: number;
 }
 
-export class Proximity {
+export declare class Proximity {
     constructor(option: number | ProximityOption);
-    on(event: 'data', cb: (data: ProximityData) => void): this;
-    on(event: 'change', cb: () => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "data", cb: (data: ProximityData) => void): this;
+    on(event: "change", cb: () => void): this;
 }
 
 export interface RelayOption {
+    board?: Board | undefined;
     pin: number | string;
-    board?: Board;
-    /**
-     * @default 'NO'
-     */
-    type?: 'NO' | 'NC';
+    type?: string | undefined;
 }
 
-/**
- * http://johnny-five.io/api/relay/
- */
-export class Relay {
-    constructor(option: Relay['pin'] | RelayOption);
+export declare class Relay {
+    constructor(option: number | RelayOption);
 
     id: string;
     pin: number | string;
     readonly isOn: boolean;
     readonly type: string;
 
-    /**
-     * Open the circuit.
-     */
     open(): void;
-    /**
-     * Close the circuit.
-     */
     close(): void;
-    /**
-     * Toggle the circuit open/close.
-     */
-    toggle(): void;
-}
-
-export class Relays {
-    /**
-     * An array of pins
-     */
-    constructor(options: Array<Relay['pin']>);
-
-    /**
-     * Using relays with different types. Some NC, some NO, etc…
-     */
-    // tslint:disable-next-line:unified-signatures
-    constructor(options: RelayOption[]);
-
-    /**
-     * Using an array of existing relays to join them into a single interface.
-     */
-    // tslint:disable-next-line:unified-signatures
-    constructor(options: Relay[]);
-
-    [index: number]: Relay;
-
-    /**
-     * Open the circuit.
-     */
-    open(): void;
-    /**
-     * Close the circuit.
-     */
-    close(): void;
-    /**
-     * Toggle the circuit open/close.
-     */
     toggle(): void;
 }
 
@@ -939,12 +769,12 @@ export interface Repl {
 export interface SensorOption {
     board?: Board | undefined;
     pin: number | string;
-    freq?: number | undefined;
+    freq?: boolean | undefined;
     threshold?: number | undefined;
     enabled?: boolean | undefined;
 }
 
-export class Sensor {
+export declare class Sensor {
     constructor(option: number | string | SensorOption);
 
     id: string;
@@ -956,25 +786,26 @@ export class Sensor {
     readonly constrained: number;
     readonly value: number;
 
-    scaleTo(range: number[]): number;
     scaleTo(low: number, high: number): number;
     fscaleTo(low: number, high: number): number;
-    fscaleTo(range: number[]): number;
+    scaleTo(range: Array<number>): number
+    fscaleTo(range: Array<number>): number
     booleanAt(barrier: number): boolean;
-    within(range: number[], cb: () => void): void;
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    within(range: Array<number>, cb: () => void): void;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
 }
 
 export interface ServoGeneralOption {
+    board?: Board | undefined;
     pin: number | string;
-    board?: Board;
-    range?: number[];
-    type?: string;
-    startAt?: number;
-    isInverted?: boolean;
-    center?: boolean;
-    controller?: string;
+    range?: Array<number> | undefined;
+    type?: string | undefined;
+    startAt?: number | undefined;
+    isInverted?: boolean | undefined;
+    center?: boolean | undefined;
+    controller?: string | undefined;
 }
 
 export interface ServoPCA9685Option extends ServoGeneralOption {
@@ -982,19 +813,19 @@ export interface ServoPCA9685Option extends ServoGeneralOption {
 }
 
 export interface ServoSweepOpts {
-    range: number[];
+    range: Array<number>;
     interval?: number | undefined;
     step?: number | undefined;
 }
 
-export class Servo {
+export declare class Servo {
     constructor(option: number | string | ServoGeneralOption);
 
     id: string;
     pin: number | string;
-    range: number[];
+    range: Array<number>;
     invert: boolean;
-    history: any[];
+    history: Array<any>;
     interval: number;
     isMoving: boolean;
     readonly last: any;
@@ -1007,11 +838,14 @@ export class Servo {
     max(): void;
     center(): void;
     home(): void;
-    sweep(arg?: number[] | ServoSweepOpts): void;
+    sweep(): void;
+    sweep(range: Array<number>): void;
+    sweep(opt: ServoSweepOpts): void;
     stop(): void;
     cw(speed: number): void;
     ccw(speed: number): void;
-    on(event: 'move:complete', cb: () => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "move:complete", cb: () => void): this;
 }
 
 export interface ShiftRegisterOption {
@@ -1020,7 +854,7 @@ export interface ShiftRegisterOption {
     isAnode?: boolean | undefined;
 }
 
-export class ShiftRegister {
+export declare class ShiftRegister {
     constructor(option: ShiftRegisterOption);
 
     id: string;
@@ -1031,7 +865,7 @@ export class ShiftRegister {
     clear(): void;
     display(number: number | string): void;
     reset(): void;
-    send(...value: number[]): void;
+    send(...value: Array<number>): void;
 }
 
 export interface SonarOption {
@@ -1042,13 +876,14 @@ export interface SonarOption {
     threshold?: number | undefined;
 }
 
-export class Sonar {
+export declare class Sonar {
     constructor(option: number | string | SonarOption);
 
-    within(range: number[], cb: () => void): void;
-    within(range: number[], unit: string, cb: () => void): void;
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    within(range: Array<number>, cb: () => void): void;
+    within(range: Array<number>, unit: string, cb: () => void): void;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
 }
 
 export interface StepperOption {
@@ -1060,35 +895,44 @@ export interface StepperOption {
     direction?: number | undefined;
 }
 
-export class Stepper {
-    static TYPE: {
-        DRIVER: number;
-        TWO_WIRE: number;
-        FOUR_WIRE: number;
-    };
+export declare namespace Stepper {
+    export class TYPE {
+        static DRIVER: number;
+        static TWO_WIRE: number;
+        static FOUR_WIRE: number;
+    }
+}
+
+export declare class Stepper {
     constructor(option: number | string | StepperOption);
 
-    step(stepsOrOpts: unknown, cb: () => void): void;
-    rpm(value?: number): Stepper;
-    speed(value?: number): Stepper;
-    direction(value?: number): Stepper;
-    accel(value?: number): Stepper;
-    decel(value?: number): Stepper;
+    step(stepsOrOpts: any, cb: () => void): void;
+    rpm(): Stepper;
+    rpm(value: number): Stepper;
+    speed(): Stepper;
+    speed(value: number): Stepper;
+    direction(): Stepper;
+    direction(value: number): Stepper;
+    accel(): Stepper;
+    accel(value: number): Stepper;
+    decel(): Stepper;
+    decel(value: number): Stepper;
     cw(): Stepper;
     ccw(): Stepper;
-    within(range: number[], cb: () => void): void;
-    within(range: number[], unit: string, cb: () => void): void;
-    on(event: 'change', cb: () => void): this;
-    on(event: 'data', cb: (data: unknown) => void): this;
+    within(range: Array<number>, cb: () => void): void;
+    within(range: Array<number>, unit: string, cb: () => void): void;
+    on(event: string, cb: () => void): this;
+    on(event: "change", cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
 }
 
 export interface SwitchOption {
     board?: Board | undefined;
     pin: number | string;
-    type?: 'NO' | 'NC' | undefined;
+    type?: "NO" | "NC" | undefined;
 }
 
-export class Switch {
+export declare class Switch {
     constructor(option: number | string | SwitchOption);
 
     id: string;
@@ -1096,7 +940,8 @@ export class Switch {
     readonly isClosed: boolean;
     readonly isOpen: boolean;
 
-    on(event: 'open' | 'close', cb: () => void): this;
+    on(event: "open", cb: () => void): this;
+    on(event: "close", cb: () => void): this;
 }
 
 export interface ThermometerOption {
@@ -1107,7 +952,7 @@ export interface ThermometerOption {
     freq?: number | undefined;
 }
 
-export class Thermometer {
+export declare class Thermometer {
     constructor(option: ThermometerOption);
 
     id: string;
@@ -1119,6 +964,7 @@ export class Thermometer {
     readonly F: number;
     readonly K: number;
 
-    on(event: 'data', cb: (data: unknown) => void): this;
-    on(event: 'change', cb: () => void): this;
+    on(event: string, cb: () => void): this;
+    on(event: "data", cb: (data: any) => void): this;
+    on(event: "change", cb: () => void): this;
 }

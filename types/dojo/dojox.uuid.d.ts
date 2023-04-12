@@ -162,7 +162,7 @@ declare namespace dojox {
             interface toString { (): void }
         }
 
-        module _base {
+        namespace _base {
             /**
              * Permalink: http://dojotoolkit.org/api/1.9/dojox/uuid/_base.variant.html
              *

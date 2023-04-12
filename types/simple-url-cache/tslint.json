@@ -3,7 +3,7 @@
     "rules": {
         "member-access": false,
         "no-consecutive-blank-lines": false,
-        "no-internal-module": false,
+        "no-declare-current-package": false,
         "no-single-declare-module": false,
         "npm-naming": [
             true,

@@ -413,7 +413,7 @@ declare namespace dojox {
             }
         }
 
-        module _base {
+        namespace _base {
             /**
              * Permalink: http://dojotoolkit.org/api/1.9/dojox/html/_base._ContentSetter.html
              *

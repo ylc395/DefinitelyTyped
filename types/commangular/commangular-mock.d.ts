@@ -3,7 +3,7 @@
 // Definitions by: Hiraash Thawfeek <https://github.com/hiraash>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-declare module commangular {
+declare namespace commangular {
 
     ///////////////////////////////////////////////////////////////////////////
     // Commangular Static

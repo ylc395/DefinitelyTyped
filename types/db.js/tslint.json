@@ -3,8 +3,9 @@
     "rules": {
         "array-type": false,
         "max-line-length": false,
-        "no-internal-module": false,
+        "no-declare-current-package": false,
         "no-single-declare-module": false,
+        "no-unnecessary-generics": false,
         "no-unnecessary-qualifier": false,
         "no-var-keyword": false,
         "object-literal-shorthand": false,

@@ -2754,7 +2754,7 @@ declare namespace dojox {
              */
             onShow(): void;
         }
-        module _base {
+        namespace _base {
         }
 
     }

@@ -98,7 +98,7 @@ declare namespace dojox {
          * @param initialData
          */
         interface Streamer { (input: Function, output: Function, interval: number, minimum: number, initialData: any[]): void }
-        module _base {
+        namespace _base {
         }
 
     }

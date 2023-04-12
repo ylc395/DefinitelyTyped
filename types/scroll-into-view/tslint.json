@@ -1,7 +1,7 @@
 {
     "extends": "@definitelytyped/dtslint/dt.json",
     "rules": {
-        "no-internal-module": false,
+        "no-declare-current-package": false,
         "no-padding": false,
         "no-single-declare-module": false,
         "no-unnecessary-qualifier": false,
